@@ -4,7 +4,7 @@
 
 const DOUBAO_API_KEY = "PASTE_YOUR_DOUBAO_API_KEY_HERE";
 const DOUBAO_MODEL = "doubao-seed-2-0-lite-260428";
-const DOUBAO_URL = "https://ark.cn-beijing.volces.com/api/v3/responses";
+const DOUBAO_URL = "https://ark.cn-beijing.volces.com/api/v3/chat/completions";
 
 function sendStatus(status) {
   Pebble.sendAppMessage({ STATUS: status });
@@ -18,6 +18,16 @@ function sendResponse(response, status) {
 }
 
 function extractAnswer(data) {
+  // Chat API: use the assistant's final content, never reasoning_content.
+  if (data && Array.isArray(data.choices) && data.choices[0] && data.choices[0].message) {
+    const content = data.choices[0].message.content;
+    if (typeof content === "string" && content) return content;
+    if (Array.isArray(content)) {
+      const text = content.map(item => (item && typeof item.text === "string") ? item.text : "").join("").trim();
+      if (text) return text;
+    }
+  }
+
   if (data && typeof data.output_text === "string" && data.output_text) {
     return data.output_text;
   }
@@ -114,9 +124,17 @@ function askDoubao(question) {
     try {
       request.send(JSON.stringify({
         model: DOUBAO_MODEL,
-        instructions: "Answer briefly in English. Keep the answer suitable for a small round smartwatch display.",
-        input: question,
-        max_output_tokens: 120
+      messages: [
+        {
+          role: "system",
+          content: "Answer briefly in English. Give only the final answer, without explaining your instructions or reasoning. Keep it suitable for a small round smartwatch display."
+        },
+        {
+          role: "user",
+          content: question
+        }
+      ],
+      max_tokens: 120
       }));
     } catch (error) {
       console.log("Doubao request send error: " + error);
