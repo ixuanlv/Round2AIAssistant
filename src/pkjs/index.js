@@ -44,13 +44,28 @@ function askDoubao(question) {
     return;
   }
 
-  sendStatus("Calling Doubao...");
+  // Keep this status separate from the network call. If CloudPebble loses the
+  // phone connection after this point, the failure is in the phone-side
+  // networking layer rather than AppMessage.
+  sendStatus("Question received");
 
-  const request = new XMLHttpRequest();
-  request.open("POST", DOUBAO_URL);
-  request.setRequestHeader("Content-Type", "application/json");
-  request.setRequestHeader("Authorization", "Bearer " + DOUBAO_API_KEY);
-  request.onload = function () {
+  setTimeout(function () {
+    sendStatus("Calling Doubao...");
+
+    let request;
+    try {
+      request = new XMLHttpRequest();
+      request.open("POST", DOUBAO_URL);
+      request.setRequestHeader("Content-Type", "application/json");
+      request.setRequestHeader("Authorization", "Bearer " + DOUBAO_API_KEY);
+    } catch (error) {
+      console.log("Doubao request setup error: " + error);
+      sendStatus("Request setup failed");
+      sendResponse("Could not start the AI request.");
+      return;
+    }
+
+    request.onload = function () {
     if (request.status < 200 || request.status >= 300) {
       console.log("Doubao HTTP error: " + request.status + " " + request.responseText);
       sendStatus("AI request failed");
@@ -67,22 +82,29 @@ function askDoubao(question) {
       sendStatus("Invalid AI response");
       sendResponse("The AI response could not be read.");
     }
-  };
-  request.onerror = function () {
-    sendStatus("Network error");
-    sendResponse("Could not connect to Doubao.");
-  };
-  request.ontimeout = function () {
-    sendStatus("AI timeout");
-    sendResponse("Doubao took too long to answer.");
-  };
-  request.timeout = 20000;
-  request.send(JSON.stringify({
-    model: DOUBAO_MODEL,
-    instructions: "Answer briefly in English. Keep the answer suitable for a small round smartwatch display.",
-    input: question,
-    max_output_tokens: 120
-  }));
+    };
+    request.onerror = function () {
+      sendStatus("Network error");
+      sendResponse("Could not connect to Doubao.");
+    };
+    request.ontimeout = function () {
+      sendStatus("AI timeout");
+      sendResponse("Doubao took too long to answer.");
+    };
+    request.timeout = 20000;
+    try {
+      request.send(JSON.stringify({
+        model: DOUBAO_MODEL,
+        instructions: "Answer briefly in English. Keep the answer suitable for a small round smartwatch display.",
+        input: question,
+        max_output_tokens: 120
+      }));
+    } catch (error) {
+      console.log("Doubao request send error: " + error);
+      sendStatus("Request send failed");
+      sendResponse("Could not send the AI request.");
+    }
+  }, 300);
 }
 
 Pebble.addEventListener("ready", function () {
