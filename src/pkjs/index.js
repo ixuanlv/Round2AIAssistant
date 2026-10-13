@@ -59,8 +59,7 @@ function extractAnswer(data) {
 
 function askDoubao(question) {
   if (DOUBAO_API_KEY === "PASTE_YOUR_DOUBAO_API_KEY_HERE") {
-    sendStatus("API key not set");
-    sendResponse("Please add the Doubao API key in PKJS.");
+    sendResponse("Please add the Doubao API key in PKJS.", "API key not set");
     return;
   }
 
@@ -80,16 +79,14 @@ function askDoubao(question) {
       request.setRequestHeader("Authorization", "Bearer " + DOUBAO_API_KEY);
     } catch (error) {
       console.log("Doubao request setup error: " + error);
-      sendStatus("Request setup failed");
-      sendResponse("Could not start the AI request.");
+      sendResponse("Could not start the AI request.", "Request setup failed");
       return;
     }
 
     request.onload = function () {
     if (request.status < 200 || request.status >= 300) {
       console.log("Doubao HTTP error: " + request.status + " " + request.responseText);
-      sendStatus("AI request failed");
-      sendResponse("Doubao request failed: " + request.status);
+      sendResponse("Doubao request failed: " + request.status, "AI request failed");
       return;
     }
 
@@ -101,17 +98,14 @@ function askDoubao(question) {
       sendResponse(extractAnswer(data), "AI reply received");
     } catch (error) {
       console.log("Doubao JSON error: " + error);
-      sendStatus("Invalid AI response");
-      sendResponse("The AI response could not be read.");
+      sendResponse("The AI response could not be read.", "Invalid AI response");
     }
     };
     request.onerror = function () {
-      sendStatus("Network error");
-      sendResponse("Could not connect to Doubao.");
+      sendResponse("Could not connect to Doubao.", "Network error");
     };
     request.ontimeout = function () {
-      sendStatus("AI timeout");
-      sendResponse("Doubao took too long to answer.");
+      sendResponse("Doubao took too long to answer.", "AI timeout");
     };
     request.timeout = 20000;
     try {
@@ -123,8 +117,7 @@ function askDoubao(question) {
       }));
     } catch (error) {
       console.log("Doubao request send error: " + error);
-      sendStatus("Request send failed");
-      sendResponse("Could not send the AI request.");
+      sendResponse("Could not send the AI request.", "Request send failed");
     }
   }, 300);
 }
