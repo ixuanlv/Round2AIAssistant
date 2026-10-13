@@ -1,4 +1,4 @@
-import { Application, Label, Skin, Style } from "piu/MC";
+import {} from "piu/MC";
 import Button from "pebble/button";
 import Dictation from "pebble/dictation";
 import Message from "pebble/message";
@@ -92,6 +92,8 @@ const application = new Application(null, {
   skin: backgroundSkin,
   contents: [title, line1, line2, line3, line4, status, hint]
 });
+
+export default application;
 
 function showLines(text) {
   const clean = String(text || "").replace(/\s+/g, " ").trim();
