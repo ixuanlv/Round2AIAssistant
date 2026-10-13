@@ -27,6 +27,11 @@ const statusStyle = new Style({
   color: "#66ccff",
   horizontal: "center"
 });
+const footerStyle = new Style({
+  font: "10px Gothic",
+  color: "#66ccff",
+  horizontal: "center"
+});
 const hintStyle = new Style({
   font: "14px Gothic",
   color: "#aaaaaa",
@@ -95,24 +100,15 @@ const line4 = new Label(null, {
 const status = new Label(null, {
   left: 28,
   right: 28,
-  top: 177,
-  height: 24,
-  style: statusStyle,
+  bottom: 4,
+  height: 15,
+  style: footerStyle,
   string: "Phone link: waiting"
-});
-
-const hint = new Label(null, {
-  left: 30,
-  right: 30,
-  bottom: 22,
-  height: 22,
-  style: hintStyle,
-  string: "UP/DOWN: test reply"
 });
 
 const application = new Application(null, {
   skin: backgroundSkin,
-  contents: [title, question1, question2, line1, line2, line3, line4, status, hint]
+  contents: [title, question1, question2, line1, line2, line3, line4, status]
 });
 
 export default application;
