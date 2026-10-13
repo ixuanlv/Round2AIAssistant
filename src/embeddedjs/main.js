@@ -221,6 +221,7 @@ const dictation = new Dictation({
 });
 
 const testQuestion = "What's the weather in Henan, China?";
+const testAnswer = "Henan weather: 26 C, Sunny";
 
 dictation.configure({ confirm: true });
 
@@ -236,7 +237,12 @@ new Button({
       showQuestion(testQuestion);
       showLines("Waiting for reply...");
       setStatus("Test question");
-      sendQuestion(testQuestion);
+      setTimeout(() => {
+        lastResponse = testAnswer;
+        showLines(lastResponse);
+        setStatus("Test reply");
+        Vibes.shortPulse();
+      }, 2000);
     } else if (type === "down") {
       showLines(lastResponse);
       setStatus("Test display");
