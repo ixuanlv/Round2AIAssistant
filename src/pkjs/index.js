@@ -3,8 +3,8 @@
 // it to the public GitHub repository.
 
 const DOUBAO_API_KEY = "PASTE_YOUR_DOUBAO_API_KEY_HERE";
-const DOUBAO_MODEL = "doubao-seed-2-1-lite-260915";
-const DOUBAO_URL = "https://ark.cn-beijing.volces.com/api/v3/chat/completions";
+const DOUBAO_MODEL = "doubao-seed-2-0-lite-260428";
+const DOUBAO_URL = "https://ark.cn-beijing.volces.com/api/v3/responses";
 
 function sendStatus(status) {
   Pebble.sendAppMessage({ STATUS: status });
@@ -16,6 +16,17 @@ function sendResponse(response) {
 }
 
 function extractAnswer(data) {
+  if (data && Array.isArray(data.output)) {
+    for (const item of data.output) {
+      if (!item || item.type !== "message" || !Array.isArray(item.content)) continue;
+      for (const content of item.content) {
+        if (content && (content.type === "output_text" || content.type === "text") && content.text) {
+          return content.text;
+        }
+      }
+    }
+  }
+
   if (data && data.choices && data.choices[0] && data.choices[0].message) {
     const content = data.choices[0].message.content;
     if (typeof content === "string") return content;
@@ -68,17 +79,9 @@ function askDoubao(question) {
   request.timeout = 20000;
   request.send(JSON.stringify({
     model: DOUBAO_MODEL,
-    messages: [
-      {
-        role: "system",
-        content: "Answer briefly in English. Keep the answer suitable for a small round smartwatch display."
-      },
-      {
-        role: "user",
-        content: question
-      }
-    ],
-    max_tokens: 120
+    instructions: "Answer briefly in English. Keep the answer suitable for a small round smartwatch display.",
+    input: question,
+    max_output_tokens: 120
   }));
 }
 
