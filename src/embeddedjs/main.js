@@ -1,4 +1,4 @@
-import {} from "piu/MC";
+import { Application, Label, Skin, Style } from "piu/MC";
 import Button from "pebble/button";
 import Dictation from "pebble/dictation";
 import Message from "pebble/message";
