@@ -28,7 +28,8 @@ const statusStyle = new Style({
   horizontal: "center"
 });
 const footerStyle = new Style({
-  font: "10px Gothic",
+  // Gabbro includes the 14px Gothic font, but not a 10px Gothic font.
+  font: "14px Gothic",
   color: "#66ccff",
   horizontal: "center"
 });
