@@ -220,7 +220,7 @@ const dictation = new Dictation({
   }
 });
 
-const testQuestion = "What's the weather in Henan, China?";
+const testQuestion = "What is the weather like in Henan, China?";
 
 dictation.configure({ confirm: true });
 
