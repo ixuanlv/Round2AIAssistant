@@ -71,7 +71,7 @@ function askDoubao(question) {
     messages: [
       {
         role: "system",
-        content: "Answer briefly in Chinese. Keep the answer suitable for a small round smartwatch display."
+        content: "Answer briefly in English. Keep the answer suitable for a small round smartwatch display."
       },
       {
         role: "user",
