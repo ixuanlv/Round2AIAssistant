@@ -1,0 +1,27 @@
+{
+  "name": "Round2 AI Assistant",
+  "author": "Round2AIAssistant",
+  "version": "0.1.0",
+  "keywords": ["pebble-app"],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "Round2 AI Assistant",
+    "uuid": "b7bbd2a4-2f27-4b95-90aa-7c8ef0f08c3c",
+    "projectType": "moddable",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": ["gabbro"],
+    "watchapp": {
+      "watchface": false
+    },
+    "messageKeys": [
+      "QUESTION",
+      "RESPONSE",
+      "STATUS"
+    ],
+    "resources": {
+      "media": []
+    }
+  }
+}
