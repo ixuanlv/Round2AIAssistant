@@ -10,9 +10,11 @@ function sendStatus(status) {
   Pebble.sendAppMessage({ STATUS: status });
 }
 
-function sendResponse(response) {
+function sendResponse(response, status) {
   const text = String(response || "No answer received").replace(/\s+/g, " ").trim();
-  Pebble.sendAppMessage({ RESPONSE: text.slice(0, 160) });
+  const payload = { RESPONSE: text.slice(0, 160) };
+  if (status) payload.STATUS = status;
+  Pebble.sendAppMessage(payload);
 }
 
 function extractAnswer(data) {
@@ -75,8 +77,10 @@ function askDoubao(question) {
 
     try {
       const data = JSON.parse(request.responseText);
-      sendResponse(extractAnswer(data));
-      sendStatus("AI reply received");
+      // Send the answer and its final status together. Sending two immediate
+      // AppMessages can cause the CloudPebble simulator to deliver only the
+      // second one.
+      sendResponse(extractAnswer(data), "AI reply received");
     } catch (error) {
       console.log("Doubao JSON error: " + error);
       sendStatus("Invalid AI response");
