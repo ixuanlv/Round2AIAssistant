@@ -187,11 +187,13 @@ const message = new Message({
   },
   onWritable() {
     messageWritable = true;
+    console.log("Message channel writable");
+    setStatus("Phone link ready");
     flushQuestion();
   },
   onSuspend() {
     messageWritable = false;
-    setStatus("Phone link: waiting");
+    console.log("Message channel suspended");
   }
 });
 
