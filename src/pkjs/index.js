@@ -18,15 +18,33 @@ function sendResponse(response, status) {
 }
 
 function extractAnswer(data) {
-  if (data && Array.isArray(data.output)) {
-    for (const item of data.output) {
-      if (!item || item.type !== "message" || !Array.isArray(item.content)) continue;
-      for (const content of item.content) {
-        if (content && (content.type === "output_text" || content.type === "text") && content.text) {
-          return content.text;
-        }
+  if (data && typeof data.output_text === "string" && data.output_text) {
+    return data.output_text;
+  }
+
+  function findOutputText(value) {
+    if (!value) return null;
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        const found = findOutputText(item);
+        if (found) return found;
       }
+      return null;
     }
+    if (typeof value !== "object") return null;
+    if ((value.type === "output_text" || value.type === "text") && typeof value.text === "string") {
+      return value.text;
+    }
+    for (const key of ["output", "content", "message"]) {
+      const found = findOutputText(value[key]);
+      if (found) return found;
+    }
+    return null;
+  }
+
+  const outputText = findOutputText(data && data.output);
+  if (outputText) {
+    return outputText;
   }
 
   if (data && data.choices && data.choices[0] && data.choices[0].message) {
