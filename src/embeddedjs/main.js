@@ -17,6 +17,11 @@ const bodyStyle = new Style({
   color: "white",
   horizontal: "center"
 });
+const questionStyle = new Style({
+  font: "14px Gothic",
+  color: "#66ccff",
+  horizontal: "center"
+});
 const statusStyle = new Style({
   font: "bold 14px Gothic",
   color: "#66ccff",
@@ -31,24 +36,41 @@ const hintStyle = new Style({
 const title = new Label(null, {
   left: 28,
   right: 28,
-  top: 25,
+  top: 15,
   height: 28,
   style: titleStyle,
   string: "ROUND 2 ASSIST"
 });
 
+const question1 = new Label(null, {
+  left: 30,
+  right: 30,
+  top: 48,
+  height: 18,
+  style: questionStyle,
+  string: "Question:"
+});
+const question2 = new Label(null, {
+  left: 30,
+  right: 30,
+  top: 65,
+  height: 18,
+  style: questionStyle,
+  string: "Press UP to test"
+});
+
 const line1 = new Label(null, {
   left: 30,
   right: 30,
-  top: 68,
+  top: 88,
   height: 22,
   style: bodyStyle,
-  string: "Ready"
+  string: "Reply"
 });
 const line2 = new Label(null, {
   left: 30,
   right: 30,
-  top: 91,
+  top: 111,
   height: 22,
   style: bodyStyle,
   string: "Press SELECT"
@@ -56,7 +78,7 @@ const line2 = new Label(null, {
 const line3 = new Label(null, {
   left: 30,
   right: 30,
-  top: 114,
+  top: 134,
   height: 22,
   style: bodyStyle,
   string: "to speak"
@@ -64,7 +86,7 @@ const line3 = new Label(null, {
 const line4 = new Label(null, {
   left: 30,
   right: 30,
-  top: 137,
+  top: 157,
   height: 22,
   style: bodyStyle,
   string: ""
@@ -90,7 +112,7 @@ const hint = new Label(null, {
 
 const application = new Application(null, {
   skin: backgroundSkin,
-  contents: [title, line1, line2, line3, line4, status, hint]
+  contents: [title, question1, question2, line1, line2, line3, line4, status, hint]
 });
 
 export default application;
@@ -112,6 +134,23 @@ function showLines(text) {
   line2.string = lines[1] || " ";
   line3.string = lines[2] || " ";
   line4.string = lines[3] || " ";
+}
+
+function showQuestion(text) {
+  const clean = String(text || "").replace(/\s+/g, " ").trim();
+  const words = clean.split(" ");
+  const lines = ["", ""];
+  let line = 0;
+
+  for (const word of words) {
+    if (line > 1) break;
+    const next = lines[line] ? lines[line] + " " + word : word;
+    if (next.length > 25 && lines[line]) line++;
+    if (line <= 1) lines[line] = lines[line] ? lines[line] + " " + word : word;
+  }
+
+  question1.string = lines[0] || "Question:";
+  question2.string = lines[1] || " ";
 }
 
 function setStatus(text) {
@@ -181,6 +220,8 @@ const dictation = new Dictation({
   }
 });
 
+const testQuestion = "What's the weather in Henan, China?";
+
 dictation.configure({ confirm: true });
 
 new Button({
@@ -191,7 +232,12 @@ new Button({
     if (type === "select") {
       setStatus("Listening...");
       dictation.start();
-    } else if (type === "up" || type === "down") {
+    } else if (type === "up") {
+      showQuestion(testQuestion);
+      showLines("Waiting for reply...");
+      setStatus("Test question");
+      sendQuestion(testQuestion);
+    } else if (type === "down") {
       showLines(lastResponse);
       setStatus("Test display");
       Vibes.shortPulse();
