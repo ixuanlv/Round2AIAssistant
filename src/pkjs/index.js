@@ -32,10 +32,13 @@ function extractAnswer(data) {
       return null;
     }
     if (typeof value !== "object") return null;
-    if ((value.type === "output_text" || value.type === "text") && typeof value.text === "string") {
+    if (typeof value.output_text === "string" && value.output_text) {
+      return value.output_text;
+    }
+    if (typeof value.text === "string" && value.text) {
       return value.text;
     }
-    for (const key of ["output", "content", "message"]) {
+    for (const key of Object.keys(value)) {
       const found = findOutputText(value[key]);
       if (found) return found;
     }
